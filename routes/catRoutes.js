@@ -89,7 +89,6 @@ router.delete('/:id', async(req, res, next) => {
 
 });
 
-//router.get('/:id')
 
 router.delete('/', async(req, res) => {
     let cat = await Cat.remove({}, function(err) {
@@ -216,13 +215,13 @@ router.post('/img', async(req, res) => {
 
 router.get('/gallery/:hehe', function(req, res) {
 
-    Gallery.find({}, function(err, galler) {
+    Gallery.find({}, function(err, gallery) {
         if (err) {
             console.log("err");
             res.redirect('/cats');
         } else {
             console.log("gallery");
-            res.render('cats/gallery');
+            res.render('cats/gallery', { gallery: gallery });
         }
     });
 });
