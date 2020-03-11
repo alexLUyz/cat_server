@@ -1,31 +1,42 @@
 <%- include("../partials/header") %>
 
-<div class="container">
+    <div class="container">
 
-	<div class="row text-center" style="display: flex; flex-wrap: wrap;">
-		<div class="col-lg-12">
-			<h3><%= cat.name%></h3>
-			<p>breed: <%= cat.breed%></p>
-			<p>Age: <%= cat.age%></p>
-			<p>description: <%= cat.description%></p>
+        <div class="row text-center" style="display: flex; flex-wrap: wrap;">
+            <div class="col-lg-12">
+                <h3>
+                    <%= cat.name%>
+                </h3>
+                <p>
+                    <%= cat.gender%>
+                </p>
+                <p>breed:
+                    <%= cat.breed%>
+                </p>
+                <p>Age:
+                    <%= cat.age%>
+                </p>
+                <p>description:
+                    <%= cat.description%>
+                </p>
 
-		</div>
-		
-		<% for (var i = 0; i < cat.image.length; i++) { %>
-		<div class="col-md-3 col-sm-6">
-			<div class="thumbnail">
-				<img src="/images/<%=cat.image[i]%>">
-				
-		</div>
-			
-		</div>
-		<% }%>
-			
-	</div>
+            </div>
 
-	
-	
-</div>
+            <% for (var i = 0; i < cat.image.length; i++) { %>
+                <div class="col-md-3 col-sm-6">
+                    <div class="thumbnail">
+                        <img src="/images/<%=cat.image[i]%>">
+
+                    </div>
+
+                </div>
+                <% }%>
+
+        </div>
 
 
-<%- include("../partials/footer") %>
+
+    </div>
+
+
+    <%- include("../partials/footer") %>
