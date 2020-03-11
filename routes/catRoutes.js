@@ -9,6 +9,7 @@ var rimraf = require("rimraf");
 const multer = require('multer');
 const dest = __dirname.slice(0, __dirname.length - 7) + '/public/images/';
 const upload = multer({ dest: dest });
+var middleware = require("../middleware");
 //console.log('hehe:' + __dirname.length);
 //console.log(__dirname.slice(0, __dirname.length-7) + '/images');
 
@@ -18,11 +19,11 @@ router.get('/', async(req, res) => {
     return res.status(200).send(cats);
 });
 
-router.get('/new', (req, res) => {
+router.get('/new', middleware.isLoggedIn, (req, res) => {
     res.render('cats/new')
 });
 
-router.post('/', async(req, res) => {
+router.post('/', middleware.isLoggedIn, async(req, res) => {
 
     let cat = await Cat.create(req.body);
 
@@ -123,7 +124,7 @@ router.delete('/', async(req, res) => {
 
 
 
-router.get('/:id/upload', async(req, res) => {
+router.get('/:id/upload', middleware.checkCatOwnership, async(req, res) => {
 
     let cat = await Cat.findById(req.params.id);
     let catid = await cat._id;
