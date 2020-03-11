@@ -7,6 +7,19 @@
                 <h3>Cat Gallery</h3>
             </div>
 
+            <% gallery.forEach(function(img) { %>
+                <div class="col-md-3 col-sm-6">
+                    <div class="thumbnail">
+                        <a href="/cats/<%= img.cat%>">
+                            <img src="/images/<%=img.image%>">
+                        </a>
+
+
+                    </div>
+
+                </div>
+                <% }); %>
+
         </div>
 
     </div>

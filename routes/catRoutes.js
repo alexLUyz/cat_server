@@ -25,12 +25,30 @@ router.get('/new', middleware.isLoggedIn, (req, res) => {
 
 router.post('/', middleware.isLoggedIn, async(req, res) => {
 
-    let cat = await Cat.create(req.body);
+    // let cat = await Cat.create(req.body);
+    // cat.owner.id = req.user._id;
+    // cat.save();
 
-    console.log(cat);
+    // req.user.cat.push(cat);
+    // req.user.save();
 
-    var id = cat._id;
-    res.redirect('cats/' + id + '/upload');
+
+    // var id = cat._id;
+    // console.log("Cat create Succedded " + cat);
+    // res.redirect('cats/' + id + '/upload');
+
+    await Cat.create(req.body, function(err, cat) {
+        if (err) console.log(err);
+        else {
+            cat.owner.id = req.user._id;
+            cat.save();
+            req.user.cats.push(cat);
+            var id = cat._id;
+            console.log("Cat create Succedded " + cat);
+            res.redirect('cats/' + id + '/upload');
+        }
+
+    });
 
 });
 
@@ -60,7 +78,7 @@ router.put('/:id', async(req, res) => {
     });
 });
 
-router.delete('/:id', async(req, res, next) => {
+router.delete('/:id', middleware.checkCatOwnership, async(req, res, next) => {
 
     let cat = await Cat.findById(req.params.id);
     let imgs = cat.image;
@@ -173,7 +191,7 @@ router.post('/:id/upload', upload.single('photo'), async(req, res) => {
 });
 
 
-router.delete('/:id/upload/:img', async(req, res) => {
+router.delete('/:id/upload/:img', middleware.checkCatOwnership, async(req, res) => {
 
     //console.log('dest: ' + dest)
     let cat = await Cat.findById(req.params.id);
@@ -214,7 +232,7 @@ router.post('/img', async(req, res) => {
 
 });
 
-router.get('/gallery/:hehe', function(req, res) {
+router.get('/gallery/:m', function(req, res) {
 
     Gallery.find({}, function(err, gallery) {
         if (err) {

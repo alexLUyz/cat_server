@@ -11,10 +11,11 @@ middlewareObj.checkCatOwnership = function(req, res, next) {
                 res.redirect("back");
             } else {
                 //does the author own the campground?
-                if (foundCat.owner.equals(req.user._id)) {
+                if (foundCat.owner.id.equals(req.user._id)) {
                     next();
                 } else {
-                    req.flash("error", "Sorry. You do NOT have the permission!");
+                    console.log("error", "Sorry. You do NOT have the permission!");
+                    console.log("user id: " + req.user._id + "  owner id: " + foundCat.owner.id);
                     res.redirect("back");
                 }
 
