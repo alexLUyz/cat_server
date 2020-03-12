@@ -4,7 +4,7 @@ var passport = require("passport");
 var User = require("../models/user");
 
 router.get("/", function(req, res) {
-  
+
     res.render("landing");
 });
 
@@ -28,10 +28,11 @@ router.post("/register", function(req, res) {
             return res.redirect("/register");
         }
 
-        //log the user in
+        user.realusername = req.body.realusername
+            //log the user in
         passport.authenticate("local")(req, res, function() {
             //req.flash("success", "Welcome to YelpCamp, " + user.username);
-            console.log("success", "Welcome to YelpCamp, " + user.realUsername);
+            console.log("success", "Welcome to CatCamp, " + user.realUsername);
             res.redirect("/");
         });
     });

@@ -1,0 +1,51 @@
+<%- include("../partials/header") %>
+
+    <div class="container">
+
+        <div class="row text-center" style="display: flex; flex-wrap: wrap;">
+            <div class="col-lg-12">
+                <h3>
+                    <%= user.realUsername%>
+                </h3>
+
+            </div>
+
+
+            <% for (var i = 0; i < cats.length; i++) { %>
+                <div class="col-md-3 col-sm-6">
+                    <div class="thumbnail">
+                        <img src="/images/<%= posts[i]%>">
+                        <div class="caption">
+                            <h4>
+                                <%= cats[i].name%>
+                            </h4>
+                        </div>
+
+                        <p>
+                            <a href="/cats/<%= cats[i]._id%>" class="btn btn-primary">More Info</a>
+                        </p>
+
+                    </div>
+
+
+                </div>
+                <% }%>
+
+
+                    <div class="col-md-3 col-sm-6">
+                        <div class="thumbnail">
+                            <a href="/cats/new">
+                                <h1>Add a New Cat</h1>
+                            </a>
+
+                        </div>
+                    </div>
+
+        </div>
+
+
+
+    </div>
+
+
+    <%- include("../partials/footer") %>

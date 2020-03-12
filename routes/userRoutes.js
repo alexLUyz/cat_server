@@ -6,10 +6,22 @@ var Cat = require("../models/cat"),
 var middleware = require("../middleware");
 
 router.get('/', middleware.isLoggedIn, async(req, res) => {
-    await (await User.findById(req.user._id).populate("cats")).execPopulate(function(err, user) {
-        if (err) console.log(err);
+    await User.findById(req.user._id).populate("cats").exec(function(err, user) {
 
-        res.render('users/myCats');
+        if (err) console.log(err);
+        else {
+            var posts = [];
+            var cats = user.cats;
+            for (var i = 0; i < user.cats.length; i++) {
+
+                posts.push(user.cats[i].posts[0].image);
+            }
+
+            //console.log(posts);
+
+            res.render('users/myCats', { user: req.user, cats: cats, posts: posts });
+        }
+
     });
 });
 
