@@ -22,18 +22,30 @@
 
             </div>
 
-            <% for (var i = 0; i < cat.image.length; i++) { %>
+            <% for (var i = 0; i < cat.posts.length; i++) { %>
                 <div class="col-md-3 col-sm-6">
                     <div class="thumbnail">
-                        <img src="/images/<%=cat.image[i]%>">
+                        <img src="/images/<%=cat.posts[i].image%>">
+                        <p>
+                            <%= cat.posts[i].description%>
+                        </p>
+
+                        <p>
+                            <%= cat.posts[i].time%>
+                        </p>
+
                     </div>
-
-                    <div class="caption">
-
-                    </div>
-
                 </div>
                 <% }%>
+
+                    <div class="col-md-3 col-sm-6">
+                        <div class="thumbnail">
+                            <a href="/cats/<%= cat.id%>/upload">
+                                <h1>Add a New Post</h1>
+                            </a>
+
+                        </div>
+                    </div>
 
         </div>
 

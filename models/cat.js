@@ -1,6 +1,5 @@
 var mongoose = require("mongoose");
 var User = require("./user");
-var Img = require("./image");
 var Gallery = require("./gallery");
 
 var catSchema = new mongoose.Schema({
@@ -9,6 +8,11 @@ var catSchema = new mongoose.Schema({
     age: String,
     gender: String,
     image: [String],
+    posts: [{
+        image: String,
+        description: String,
+        time: String
+    }],
     description: String,
     owner: {
         id: {

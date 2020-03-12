@@ -4,8 +4,8 @@ var express = require("express"),
     mongoose = require("mongoose"),
     User = require("./models/user"),
     passport = require("passport"),
-    LocalStrategy = require("passport-local"),
-    passportLocalMongoose = require("passport-local-mongoose")
+    LocalStrategy = require("passport-local")
+    //passportLocalMongoose = require("passport-local-mongoose")
     // methodOverride = require("method-override"),
     // Cat = require("./models/cat"),
     // User = require("./models/user"),
@@ -13,7 +13,7 @@ var express = require("express"),
     // fs = require("fs")
 
 var catRoutes = require("./routes/catRoutes"),
-    // 	userRoutes = require("./routes/userRouts"),
+    userRoutes = require("./routes/userRoutes"),
     indexRoutes = require("./routes/indexRoutes")
 
 //if (process.env.NODE_ENV === 'goorm') {
@@ -78,7 +78,7 @@ app.get("/", (req, res) => {
 
 app.use("/", indexRoutes);
 app.use("/cats", catRoutes);
-
+app.use("/users", userRoutes);
 
 
 //Tell Express to listen to requests. Start server.

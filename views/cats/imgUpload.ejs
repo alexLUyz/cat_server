@@ -1,18 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <title>Upload Images to Server</title>
+    <title>New Post</title>
     <meta charset="utf-8">
-    
+
 </head>
+
 <body>
 
-<h1>Upload Image</h1>
- 
-<form action='/cats/<%= catid%>/upload', method="post" enctype="multipart/form-data">
-        <input type="file" accept="image/*" name="photo" >
+    <h1>New Post of
+        <%= cat.name%>
+    </h1>
+
+
+
+    <form action='/cats/<%= cat.id%>/upload' , method="post" enctype="multipart/form-data">
+        <input type="file" accept="image/*" name="photo">
+        <div class="form-group">
+            <input class="form-control" type="text" name="description" placeholder="Description">
+        </div>
         <input type="submit" value="upload">
-</form>  
+    </form>
+
+
 
 </body>
+
 </html>

@@ -16,6 +16,8 @@ var middleware = require("../middleware");
 
 router.get('/', async(req, res) => {
     let cats = await Cat.find();
+    //var time = new Date().toString();
+    //console.log(time);
     return res.status(200).send(cats);
 });
 
@@ -43,6 +45,7 @@ router.post('/', middleware.isLoggedIn, async(req, res) => {
             cat.owner.id = req.user._id;
             cat.save();
             req.user.cats.push(cat);
+            req.user.save();
             var id = cat._id;
             console.log("Cat create Succedded " + cat);
             res.redirect('cats/' + id + '/upload');
@@ -78,33 +81,38 @@ router.put('/:id', async(req, res) => {
     });
 });
 
-router.delete('/:id', middleware.checkCatOwnership, async(req, res, next) => {
-
-    let cat = await Cat.findById(req.params.id);
-    let imgs = cat.image;
-
-
-    for (var i = 0; i < imgs.length; i++) {
-        fs.unlink(dest + imgs[i], function(err) {
-            if (err) //throw err;
-            // if no error, file has been deleted successfully
-                console.log('File deleted!');
-        });
-    }
-
+router.delete('/:id', async(req, res, next) => {
 
     await Cat.findById(req.params.id, function(err, cat) {
-        if (err) return next(err);
+        if (err) console.log(err);
 
-        cat.remove();
-        res.redirect('/cats');
+        else {
+            for (var i = 0; i < cat.image.length; i++) {
+                fs.unlink(dest + cat.image[i], function(err) {
+                    if (err) console.log(err); //throw err;
+                    // if no error, file has been deleted successfully
+                    console.log('File deleted!');
+                    res.redirect('/cats');
+                });
+            }
 
+            cat.remove();
+
+        }
     });
 
-    // return res.status(202).send({
-    //   error: false,s
-    //   cat
-    // })
+
+
+
+
+
+    // await Cat.findById(req.params.id, function(err, cat) {
+    //     if (err) return next(err);
+
+    //     cat.remove();
+    //     res.redirect('/cats');
+
+    // });
 
 });
 
@@ -144,51 +152,106 @@ router.delete('/', async(req, res) => {
 
 router.get('/:id/upload', middleware.checkCatOwnership, async(req, res) => {
 
-    let cat = await Cat.findById(req.params.id);
-    let catid = await cat._id;
+    await Cat.findById(req.params.id, function(err, cat) {
 
-    console.log(cat);
+        if (err) console.log(err);
 
-    res.render("cats/imgUpload", { catid: catid });
+        else {
+            res.render("cats/imgUpload", { cat: cat });
+        }
+    });
+
 });
+
 
 
 router.post('/:id/upload', upload.single('photo'), async(req, res) => {
 
     if (req.file) {
 
-        var filename = req.file.filename;
-        fs.rename(dest + filename,
-            dest + filename + '.png',
-            function(err) {
-                if (err) console.log('ERROR: ' + err);
-            });
+        await Cat.findById(req.params.id, function(err, cat) {
+            if (err) console.log(err);
 
-        let cat = await Cat.findById(req.params.id);
-        let d = await filename + '.png';
+            else {
+                var filename = req.file.filename;
+                fs.rename(dest + filename, dest + filename + '.png', function(err) {
+                    if (err) console.log('ERROR: ' + err);
+                });
 
-        await cat.image.push(d);
-        await cat.save();
+                var time = new Date().toString();
+                var post = {
+                    image: filename + '.png',
+                    description: req.body.description,
+                    time: time
+                }
 
-        let img = await filename + '.png';
+                console.log(Date.now().toString());
+                cat.posts.push(post);
+                cat.image.push(filename + '.png');
 
-        let gallery = await Gallery.create({
-            image: img,
-            cat: cat
-        }, function(err, pic) {
-            //pic.cat = cat._id;	
-            // console.log('3: ' + pic);
-            // console.log('4: ' + cat);
+                console.log("des:" + req.body.description);
+                //cat.save();
 
-            cat.gallery.push(pic);
-            //console.log('5: ' + cat);
-            cat.save();
+
+
+                Gallery.create({
+                    image: filename + '.png',
+                    cat: cat
+                }, function(err, pic) {
+                    if (err) console.log("ERRRR: " + err);
+
+                    else {
+                        cat.gallery.push(pic);
+                        cat.save();
+                    }
+
+                });
+
+                res.redirect('/cats/' + req.params.id);
+
+            }
         });
 
 
-        res.redirect('/cats/' + req.params.id + '/upload');
     } else throw 'error';
 });
+
+// router.post('/:id/upload', upload.single('photo'), async(req, res) => {
+
+//     if (req.file) {
+
+//         var filename = req.file.filename;
+//         fs.rename(dest + filename,
+//             dest + filename + '.png',
+//             function(err) {
+//                 if (err) console.log('ERROR: ' + err);
+//             });
+
+//         let cat = await Cat.findById(req.params.id);
+//         let d = await filename + '.png';
+
+//         await cat.image.push(d);
+//         await cat.save();
+
+//         let img = await filename + '.png';
+
+//         await Gallery.create({
+//             image: img,
+//             cat: cat
+//         }, function(err, pic) {
+//             //pic.cat = cat._id;	
+//             // console.log('3: ' + pic);
+//             // console.log('4: ' + cat);
+
+//             cat.gallery.push(pic);
+//             //console.log('5: ' + cat);
+//             cat.save();
+//         });
+
+
+//         res.redirect('/cats/' + req.params.id + '/upload');
+//     } else throw 'error';
+// });
 
 
 router.delete('/:id/upload/:img', middleware.checkCatOwnership, async(req, res) => {
@@ -236,10 +299,9 @@ router.get('/gallery/:m', function(req, res) {
 
     Gallery.find({}, function(err, gallery) {
         if (err) {
-            console.log("err");
+            console.log(err);
             res.redirect('/cats');
         } else {
-            console.log("gallery");
             res.render('cats/gallery', { gallery: gallery });
         }
     });
