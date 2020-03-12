@@ -31,7 +31,7 @@ var catRoutes = require("./routes/catRoutes"),
 // }
 
 // else {
-mongoose.connect('mongodb+srv://alexDB:lyz19950912@cluster0-k44mz.mongodb.net/391Module2?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv://alexDB:lyz19950912@cluster0-k44mz.mongodb.net/deploy_391Module2?retryWrites=true&w=majority', {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true
