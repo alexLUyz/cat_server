@@ -82,14 +82,11 @@ app.use("/users", userRoutes);
 
 
 //Tell Express to listen to requests. Start server.
-//if (process.env.NODE_ENV === 'goorm') {
-app.listen(3000, function() {
-    console.log("Local CPEN391 has started!!")
-});
-//} 
+// app.listen(3000, function() {
+//     console.log("Local CPEN391 has started!!")
+// });
 
-// else {
-//     app.listen(process.env.PORT, process.env.IP, function() {
-//         console.log("Cloud CPEN391 has started!!")
-//     });
-// }
+
+app.listen(process.env.PORT, process.env.IP, function() {
+    console.log("Cloud CPEN391 has started!!")
+});
