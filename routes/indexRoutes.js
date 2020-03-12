@@ -4,7 +4,7 @@ var passport = require("passport");
 var User = require("../models/user");
 
 router.get("/", function(req, res) {
-    //console.log("User: " + req.user);
+  
     res.render("landing");
 });
 
