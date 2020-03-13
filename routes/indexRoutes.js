@@ -28,11 +28,14 @@ router.post("/register", function(req, res) {
             return res.redirect("/register");
         }
 
+        console.log(req.body.realusername);
         user.realusername = req.body.realusername
-            //log the user in
+        console.log(user);
+        //log the user in
         passport.authenticate("local")(req, res, function() {
             //req.flash("success", "Welcome to YelpCamp, " + user.username);
-            console.log("success", "Welcome to CatCamp, " + user.realUsername);
+            console.log("success", "Welcome to CatCamp, " + user.realusername);
+            user.save();
             res.redirect("/");
         });
     });
