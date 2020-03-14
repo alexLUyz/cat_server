@@ -23,8 +23,8 @@ router.get("/new", middleware.isLoggedIn, async(req, res) => {
 
 
 
-router.post("/", middleware.isLoggedIn, function(req, res) {
-    Cat.findById(req.params.id, function(err, cat) {
+router.post("/", middleware.isLoggedIn, async(req, res) => {
+    await Cat.findById(req.params.id, function(err, cat) {
         if (err) console.log(err);
 
         else {
@@ -43,7 +43,6 @@ router.post("/", middleware.isLoggedIn, function(req, res) {
                     content: req.body.content,
                     likes: 0,
                     time: time,
-                    //cat: cat
                 }
                 //console.log("posting: " + posting);
 
@@ -55,28 +54,27 @@ router.post("/", middleware.isLoggedIn, function(req, res) {
 
                 else {
                     cat.postings.push(posting);
-                    //cat.save();
                     console.log("cat: " + cat);
-
 
                     var gallery = {
                         images: imgs,
-                        //posting: posting
                     }
 
                     Gallery.create(gallery, function(err, gallery) {
                         if (err) console.log(err);
 
                         else {
-                            //posting.galleries.push(gallery);
-                            //posting.save();
-                            gallery.postings = posting;
-                            gallery.save();
+
                             posting.galleries.push(gallery);
                             posting.save();
                             cat.galleries.push(gallery);
                             cat.save();
+
+                            gallery.cat = cat;
+                            gallery.posting = posting;
+                            gallery.save();
                             console.log("posting: " + posting);
+                            //console.log("gallery: " + gallery);
                             res.redirect('/cats/' + req.params.id);
                         }
                     });
@@ -84,7 +82,6 @@ router.post("/", middleware.isLoggedIn, function(req, res) {
 
 
             });
-
 
         }
 
@@ -151,12 +148,6 @@ router.put("/:pid/likes", async(req, res) => {
         }
     });
 });
-
-
-
-
-
-
 
 
 module.exports = router;

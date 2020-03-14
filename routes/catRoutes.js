@@ -1,8 +1,9 @@
 var express = require("express");
 var router = express.Router();
-var Cat = require("../models/cat");
-var Img = require("../models/image");
-var Gallery = require("../models/gallery");
+var Cat = require("../models/cat"),
+    Post = require("../models/post"),
+    Gallery = require("../models/gallery"),
+    Img = require("../models/image")
 var fs = require("fs");
 var rimraf = require("rimraf");
 //var mkdirp = require('mkdirp');
@@ -219,32 +220,7 @@ router.post('/:id/imgs', middleware.checkCatOwnership, upload.single('photo'), a
 
 
 
-router.delete('/:id/upload/:img', middleware.checkCatOwnership, async(req, res) => {
-
-    //console.log('dest: ' + dest)
-    let cat = await Cat.findById(req.params.id);
-    let img = await cat.image;
-    let imgName = req.params.img;
-
-    for (var i = 0; i < img.length; i++) {
-        if (img[i] === imgName) { img.splice(i, 1); }
-    }
-
-    await cat.save();
-
-    fs.unlink(dest + imgName, function(err) {
-        if (err) throw err;
-        // if no error, file has been deleted successfully
-        console.log('File deleted!');
-    });
-
-    console.log(cat);
-    console.log(img);
-
-});
-
 //upload local files to mongodb
-
 router.post('/img', async(req, res) => {
     var i = {
         data: fs.readFileSync('./cat.png'),
@@ -262,12 +238,26 @@ router.post('/img', async(req, res) => {
 
 router.get('/gallery/:m', function(req, res) {
 
-    Gallery.find({}, function(err, gallery) {
+    Gallery.find({}, function(err, galleries) {
         if (err) {
             console.log(err);
             res.redirect('/cats');
         } else {
-            res.send(gallery);
+
+            var pics = [];
+            galleries.forEach((gallery) => {
+                imgs = gallery.images;
+                imgs.forEach((img) => {
+                    pics.push({
+                        img: img,
+                        cat: gallery.cat,
+                        post: gallery.posting
+                    })
+                });
+            });
+
+            console.log(pics);
+            res.render("cats/gallery", { pics: pics });
         }
     });
 });
@@ -276,6 +266,29 @@ router.get('/gallery/:m', function(req, res) {
 
 module.exports = router;
 
+// router.delete('/:id/upload/:img', middleware.checkCatOwnership, async(req, res) => {
+
+//     //console.log('dest: ' + dest)
+//     let cat = await Cat.findById(req.params.id);
+//     let img = await cat.image;
+//     let imgName = req.params.img;
+
+//     for (var i = 0; i < img.length; i++) {
+//         if (img[i] === imgName) { img.splice(i, 1); }
+//     }
+
+//     await cat.save();
+
+//     fs.unlink(dest + imgName, function(err) {
+//         if (err) throw err;
+//         // if no error, file has been deleted successfully
+//         console.log('File deleted!');
+//     });
+
+//     console.log(cat);
+//     console.log(img);
+
+// });
 
 // router.post('/:id/upload', upload.single('photo'), async(req, res) => {
 

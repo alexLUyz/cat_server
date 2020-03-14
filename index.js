@@ -27,7 +27,7 @@ var catRoutes = require("./routes/catRoutes"),
 // }
 
 // else {
-mongoose.connect('mongodb+srv://alexDB:lyz19950912@cluster0-k44mz.mongodb.net/new_local_391Module2?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv://alexDB:lyz19950912@cluster0-k44mz.mongodb.net/cloud_local_391Module2?retryWrites=true&w=majority', {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true
@@ -78,11 +78,11 @@ app.use("/cats", catRoutes);
 app.use("/cats/:id/posts", postingRoutes);
 
 //Tell Express to listen to requests. Start server.
-app.listen(3000, function() {
-    console.log("Local CPEN391 has started!!")
-});
-
-
-// app.listen(process.env.PORT, process.env.IP, function() {
-//     console.log("Cloud CPEN391 has started!!")
+// app.listen(3000, function() {
+//     console.log("Local CPEN391 has started!!")
 // });
+
+
+app.listen(process.env.PORT, process.env.IP, function() {
+    console.log("Cloud CPEN391 has started!!")
+});
