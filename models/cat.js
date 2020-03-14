@@ -1,19 +1,26 @@
 var mongoose = require("mongoose");
-var User = require("./user");
-var Gallery = require("./gallery");
+var User = require("./user"),
+    Post = require("./post"),
+    Gallery = require("./gallery")
+
 
 var catSchema = new mongoose.Schema({
     name: String,
     breed: String,
     age: String,
     gender: String,
-    image: [String],
-    posts: [{
-        image: String,
-        description: String,
-        time: String
-    }],
+    profilepic: String,
     description: String,
+    tmp: [String],
+    postings: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post"
+    }],
+    galleries: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Gallery"
+    }],
+
     owner: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
@@ -21,25 +28,26 @@ var catSchema = new mongoose.Schema({
         },
 
         ownername: String
-    },
-
-    gallery: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Gallery"
-    }]
+    }
 });
 
 catSchema.pre('remove', async function(next) {
     try {
-        console.log(this.gallery);
+
+        await Post.remove({
+            "_id": {
+                $in: this.postings
+            }
+        });
+        console.log('postings deleted!!');
 
         await Gallery.remove({
             "_id": {
-                $in: this.gallery
+                $in: this.galleries
             }
         });
+        console.log('galleries deleted!!');
 
-        console.log('gallery deleted!!');
         next();
     } catch (err) {
         next(err);

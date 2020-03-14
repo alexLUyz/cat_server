@@ -4,15 +4,11 @@ var express = require("express"),
     mongoose = require("mongoose"),
     User = require("./models/user"),
     passport = require("passport"),
-    LocalStrategy = require("passport-local")
-    //passportLocalMongoose = require("passport-local-mongoose")
-    // methodOverride = require("method-override"),
-    // Cat = require("./models/cat"),
-    // User = require("./models/user"),
-    // Img = require("./models/image"),
-    // fs = require("fs")
+    LocalStrategy = require("passport-local"),
+    methodOverride = require("method-override")
 
 var catRoutes = require("./routes/catRoutes"),
+    postingRoutes = require("./routes/postingRoutes"),
     userRoutes = require("./routes/userRoutes"),
     indexRoutes = require("./routes/indexRoutes")
 
@@ -31,7 +27,7 @@ var catRoutes = require("./routes/catRoutes"),
 // }
 
 // else {
-mongoose.connect('mongodb+srv://alexDB:lyz19950912@cluster0-k44mz.mongodb.net/cloud_391Module2?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv://alexDB:lyz19950912@cluster0-k44mz.mongodb.net/new_local_391Module2?retryWrites=true&w=majority', {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true
@@ -47,7 +43,7 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.set("view engine", "ejs");
-// app.use(methodOverride("_method"));
+app.use(methodOverride("_method"));
 
 //PASSPORT CONFIGURATION
 app.use(require("express-session")({
@@ -77,16 +73,16 @@ app.get("/", (req, res) => {
 
 
 app.use("/", indexRoutes);
-app.use("/cats", catRoutes);
 app.use("/users", userRoutes);
-
+app.use("/cats", catRoutes);
+app.use("/cats/:id/posts", postingRoutes);
 
 //Tell Express to listen to requests. Start server.
-// app.listen(3000, function() {
-//     console.log("Local CPEN391 has started!!")
-// });
-
-
-app.listen(process.env.PORT, process.env.IP, function() {
-    console.log("Cloud CPEN391 has started!!")
+app.listen(3000, function() {
+    console.log("Local CPEN391 has started!!")
 });
+
+
+// app.listen(process.env.PORT, process.env.IP, function() {
+//     console.log("Cloud CPEN391 has started!!")
+// });

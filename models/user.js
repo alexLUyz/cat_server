@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
-//var Cat = require("./cat");
+var Cat = require("./cat");
+var Post = require("./post");
 var passportLocalMongoose = require("passport-local-mongoose");
 
 var UserSchema = new mongoose.Schema({
@@ -10,6 +11,15 @@ var UserSchema = new mongoose.Schema({
     cats: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Cat"
+    }],
+    follows: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Cat"
+    }],
+
+    liked: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post"
     }]
 
 });

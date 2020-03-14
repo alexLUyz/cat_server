@@ -1,15 +1,16 @@
 var mongoose = require("mongoose");
-var Cat   = require("./cat");
+var Post = require("./post");
+
 var GallerySchema = new mongoose.Schema({
-	
-	image: String,
-	cat: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "Cat"
-	}
 
-}); 
+    images: [String],
 
-//UserSchema.plugin(passportLocalMongoose);
+    posting: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post"
+    }
+
+});
+
 
 module.exports = mongoose.model("Gallery", GallerySchema);

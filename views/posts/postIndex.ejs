@@ -1,0 +1,49 @@
+<%- include("../partials/header") %>
+    <h3>
+        <%= cat.name%>'s Post at
+            <%= post.time%>
+    </h3>
+    <div class="container">
+
+        <div class="row text-center" style="display: flex; flex-wrap: wrap;">
+            <div class="col-lg-12">
+                <h2>content:
+                    <%= post.content%>
+                </h2>
+                <h4>likes:
+                    <%= post.likes%>
+                        <form action="/cats/<%= cat.id %>/posts/<%= post._id %>/likes?_method=PUT" method="POST">
+                            <div class="form-group">
+                                <button class="btn btn-lg btn-primary btn-block">Like</button>
+                            </div>
+                        </form>
+                </h4>
+
+            </div>
+
+            <% for (var i = 0; i < post.images.length; i++) { %>
+                <div class="col-md-3 col-sm-6">
+                    <div class="thumbnail">
+                        <img src="/images/<%=post.images[i]%>">
+                    </div>
+                </div>
+
+
+                <% } %>
+
+
+                    <div class="col-md-3 col-sm-6">
+                        <div class="thumbnail">
+                            <a href="/cats/<%= cat.id%>/imgs">
+                                <h1>Add a New Post</h1>
+                            </a>
+
+                        </div>
+                    </div>
+
+        </div>
+
+
+
+    </div>
+    <%- include("../partials/footer") %>

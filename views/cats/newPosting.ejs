@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Upload Cat Imgs</title>
+    <meta charset="utf-8">
+
+</head>
+
+<body>
+
+    <h1>Imgs of
+        <%= cat.name%>
+    </h1>
+
+
+
+    <form action='/cats/<%= cat.id%>/imgs' , method="post" enctype="multipart/form-data">
+        <input type="file" accept="image/*" name="photo">
+        <input type="submit" value="upload">
+    </form>
+
+    <a href="/cats/<%= cat.id%>/posts/new">Finish Uploading</a>
+
+
+</body>
+
+</html>

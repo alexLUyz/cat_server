@@ -9,15 +9,12 @@
 
 <body>
 
-    <h1>New Post of
+    <h1>Profile Pic of
         <%= cat.name%>
     </h1>
 
-    <form action='/cats/<%= cat.id%>/upload' , method="post" enctype="multipart/form-data">
+    <form action='/cats/<%= cat.id%>/pic' , method="post" enctype="multipart/form-data">
         <input type="file" accept="image/*" name="photo">
-        <div class="form-group">
-            <input class="form-control" type="text" name="description" placeholder="Description">
-        </div>
         <input type="submit" value="upload">
 
     </form>

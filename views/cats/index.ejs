@@ -22,17 +22,35 @@
 
             </div>
 
-            <% for (var i = 0; i < cat.posts.length; i++) { %>
+            <% for (var i = 0; i < cat.postings.length; i++) { %>
                 <div class="col-md-3 col-sm-6">
                     <div class="thumbnail">
-                        <img src="/images/<%=cat.posts[i].image%>">
+
+
+                        <a href="<%=cat.id%>/posts/<%=cat.postings[i].id%>">
+                            <img src="/images/<%=cat.postings[i].images[0]%>">
+                        </a>
+
                         <p>
-                            <%= cat.posts[i].description%>
+                            <%= cat.postings[i].content%> <a href="<%=cat.id%>/posts/<%=cat.postings[i].id%>">
+                                See More
+                            </a>
+                        </p>
+
+                        <p>likes:
+                            <%= cat.postings[i].likes%>
                         </p>
 
                         <p>
-                            <%= cat.posts[i].time%>
+                            <form action="/cats/<%= cat.id %>/posts/<%= cat.postings[i].id%>/likes?_method=PUT" method="POST">
+                                <div class="form-group">
+                                    <button class="btn btn-lg btn-primary btn-block">Like</button>
+                                </div>
+                            </form>
                         </p>
+
+
+
 
                     </div>
                 </div>
@@ -40,7 +58,7 @@
 
                     <div class="col-md-3 col-sm-6">
                         <div class="thumbnail">
-                            <a href="/cats/<%= cat.id%>/upload">
+                            <a href="/cats/<%= cat.id%>/imgs">
                                 <h1>Add a New Post</h1>
                             </a>
 
