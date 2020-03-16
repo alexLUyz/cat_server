@@ -28,7 +28,16 @@ var catSchema = new mongoose.Schema({
         },
 
         ownername: String
-    }
+    },
+
+    followers: [{
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+
+        username: String
+    }]
 });
 
 catSchema.pre('remove', async function(next) {

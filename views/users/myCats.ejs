@@ -39,15 +39,20 @@
                 </div>
                 <% }%>
 
+                    <% if (currentUser && currentUser._id.equals(cats[0].owner.id)) {%>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="thumbnail">
 
-                    <div class="col-md-3 col-sm-6">
-                        <div class="thumbnail">
-                            <a href="/cats/new">
-                                <h1>Add a New Cat</h1>
-                            </a>
+                                <a href="/cats/new">
+                                    <h1>Add a New Cat</h1>
+                                </a>
 
+
+                            </div>
                         </div>
-                    </div>
+                        <%}%>
+
+
 
         </div>
 

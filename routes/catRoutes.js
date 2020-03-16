@@ -1,21 +1,23 @@
 const AWS_ACCESS_KEY_ID = 'AKIAJS4R2IFRZKHIIK7A';
 const AWS_SECRET_ACCESS_KEY = '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';
 const S3_BUCKET = '391imgs';
+const DB = 'cloud_391Module2';
 const aws = require('aws-sdk');
 var crypto = require('crypto');
 var express = require("express");
 var router = express.Router();
 var Cat = require("../models/cat"),
     Post = require("../models/post"),
-    Gallery = require("../models/gallery"),
-    Img = require("../models/image")
-var fs = require("fs");
-var rimraf = require("rimraf");
-//var mkdirp = require('mkdirp');
-const multer = require('multer');
-const dest = __dirname.slice(0, __dirname.length - 7) + '/public/images/';
-const upload = multer({ dest: dest });
+    Gallery = require("../models/gallery")
 var middleware = require("../middleware");
+//Img = require("../models/image")
+//var fs = require("fs");
+//var rimraf = require("rimraf");
+//var mkdirp = require('mkdirp');
+//const multer = require('multer');
+//const dest = __dirname.slice(0, __dirname.length - 7) + '/public/images/';
+//const upload = multer({ dest: dest });
+
 //console.log('hehe:' + __dirname.length);
 //console.log(__dirname.slice(0, __dirname.length-7) + '/images');
 
@@ -49,7 +51,7 @@ router.get('/sign-s3', (req, res) => {
 
     var t = Date.now();
     var hash = crypto.createHash('md5').update(t + fileName).digest('hex');
-    hash = 'images/' + hash + '.png';
+    hash = 'images/' + DB + '/' + hash + '.png';
 
     const s3Params = {
         Bucket: S3_BUCKET,
@@ -80,11 +82,12 @@ router.get('/sign-s3', (req, res) => {
  */
 router.post('/', async(req, res) => {
 
-    console.log(req.body);
+    //console.log(req.body);
     await Cat.create(req.body, function(err, cat) {
         if (err) console.log(err);
         else {
             cat.owner.id = req.user._id;
+            cat.owner.ownername = req.user.realusername;
             cat.save();
             req.user.cats.push(cat);
             req.user.save();
@@ -200,22 +203,21 @@ router.delete('/', async(req, res) => {
 
 });
 
+router.post('/:id/follows', async(req, res) => {
 
-//upload local files to mongodb
-router.post('/img', async(req, res) => {
-    var i = {
-        data: fs.readFileSync('./cat.png'),
-        contentType: "image/png"
-
-    }
-
-    let img = Img.create(i);
-    return res.status(201).send({
-        error: false,
-        img
+    await Cat.findById(req.params.id, function(err, cat) {
+        if (err) console.log(err);
+        else {
+            req.user.follows.push(cat)
+            req.user.save();
+            console.log('Follows ' + cat.name);
+            res.redirect('cats/' + id);
+        }
     });
 
 });
+
+
 
 router.get('/gallery/:m', function(req, res) {
 
@@ -246,6 +248,22 @@ router.get('/gallery/:m', function(req, res) {
 
 
 module.exports = router;
+
+//upload local files to mongodb
+// router.post('/img', async(req, res) => {
+//     var i = {
+//         data: fs.readFileSync('./cat.png'),
+//         contentType: "image/png"
+
+//     }
+
+//     let img = Img.create(i);
+//     return res.status(201).send({
+//         error: false,
+//         img
+//     });
+
+// });
 
 // router.delete('/:id/upload/:img', middleware.checkCatOwnership, async(req, res) => {
 

@@ -38,16 +38,16 @@
 
                 <% } %>
 
+                    <% if (currentUser && currentUser._id.equals(cat.owner.id)) {%>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="thumbnail">
+                                <a href="/cats/<%= cat.id%>/posts/new">
+                                    <h1>Add a New Post</h1>
+                                </a>
 
-                    <div class="col-md-3 col-sm-6">
-                        <div class="thumbnail">
-                            <a href="/cats/<%= cat.id%>/imgs">
-                                <h1>Add a New Post</h1>
-                            </a>
-
+                            </div>
                         </div>
-                    </div>
-
+                        <% } %>
         </div>
 
 

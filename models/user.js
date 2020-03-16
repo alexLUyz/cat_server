@@ -17,7 +17,7 @@ var UserSchema = new mongoose.Schema({
         ref: "Cat"
     }],
 
-    liked: [{
+    likes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Post"
     }]

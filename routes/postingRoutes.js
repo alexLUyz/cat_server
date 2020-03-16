@@ -8,21 +8,9 @@ var Cat = require("../models/cat"),
     Post = require("../models/post"),
     Gallery = require("../models/gallery")
 var middleware = require("../middleware");
-const dest = __dirname.slice(0, __dirname.length - 7) + '/public/images/';
-var fs = require("fs");
-
-router.get("/new", middleware.checkCatOwnership, async(req, res) => {
-    await Cat.findById(req.params.id, function(err, cat) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render("posts/new", { cat: req.params.id });
-        }
-    });
-});
 
 /*********************************************************/
-router.get("/newPost", middleware.checkCatOwnership, async(req, res) => {
+router.get("/new", middleware.checkCatOwnership, async(req, res) => {
     await Cat.findById(req.params.id, function(err, cat) {
         if (err) {
             console.log(err);
@@ -48,15 +36,42 @@ router.post("/pics", middleware.checkCatOwnership, async(req, res) => {
     });
 });
 
+router.delete("/pics", middleware.checkCatOwnership, async(req, res) => {
+    await Cat.findById(req.params.id, function(err, cat) {
+
+        if (err) console.log(err);
+
+        else {
+            const s3 = new aws.S3({
+                accessKeyId: AWS_ACCESS_KEY_ID,
+                secretAccessKey: AWS_SECRET_ACCESS_KEY
+            });
+
+            var imgs = cat.tmp;
+            imgs.forEach(img => {
+                s3.deleteObject({
+                    Bucket: S3_BUCKET,
+                    Key: middleware.returnKey(img)
+                }, function(err, data) {
+                    if (err) console.log(err);
+                })
+            });
+
+            cat.tmp = [];
+            cat.save();
+
+            console.log("cats tmp cleared: " + cat.tmp);
+            res.redirect('back');
+
+        }
+    });
+});
+
 router.post("/", middleware.checkCatOwnership, async(req, res) => {
     await Cat.findById(req.params.id, function(err, cat) {
         if (err) console.log(err);
 
         else {
-            // if (cat.tmp.length == 0) {
-            //     console.log('no imgs to post!!');
-            //     res.redirect('back');
-            // }
 
             //console.log("cat tmp: " + cat.tmp);
             var imgs = cat.tmp;

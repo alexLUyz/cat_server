@@ -1,3 +1,6 @@
+const DB = 'cloud_391Module2';
+const PW = 'lyz19950912';
+
 var express = require("express"),
     app = express(),
     bodyParser = require("body-parser"),
@@ -27,7 +30,7 @@ var catRoutes = require("./routes/catRoutes"),
 // }
 
 // else {
-mongoose.connect('mongodb+srv://alexDB:lyz19950912@cluster0-k44mz.mongodb.net/cloud_391Module2?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv://alexDB:' + PW + '@cluster0-k44mz.mongodb.net/' + DB + '?retryWrites=true&w=majority', {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true
@@ -83,6 +86,6 @@ app.use("/cats/:id/posts", postingRoutes);
 // });
 
 
-app.listen(process.env.PORT, process.env.IP, function() {
+app.listen(3000 || process.env.PORT, process.env.IP, function() {
     console.log("Cloud CPEN391 has started!!")
 });
