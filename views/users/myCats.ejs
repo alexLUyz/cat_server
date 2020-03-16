@@ -14,7 +14,7 @@
             <% for (var i = 0; i < cats.length; i++) { %>
                 <div class="col-md-3 col-sm-6">
                     <div class="thumbnail">
-                        <img src="/images/<%= cats[i].profilepic%>">
+                        <img src="<%= cats[i].profilepic%>">
                         <div class="caption">
                             <h4>
                                 <%= cats[i].name%>
@@ -23,6 +23,14 @@
 
                         <p>
                             <a href="/cats/<%= cats[i]._id%>" class="btn btn-primary">More Info</a>
+                        </p>
+
+                        <p>
+                            <% if (currentUser && currentUser._id.equals(cats[i].owner.id)) {%>
+                                <form class="delete-form" action="/cats/<%=cats[i]._id%>?_method=DELETE" method="POST">
+                                    <button class="btn btn-danger">Delete Cat</button>
+                                </form>
+                                <%}%>
                         </p>
 
                     </div>

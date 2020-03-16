@@ -1,3 +1,8 @@
+const AWS_ACCESS_KEY_ID = 'AKIAJS4R2IFRZKHIIK7A';
+const AWS_SECRET_ACCESS_KEY = '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';
+const S3_BUCKET = '391imgs';
+const aws = require('aws-sdk');
+var crypto = require('crypto');
 var express = require("express");
 var router = express.Router();
 var Cat = require("../models/cat"),
@@ -22,12 +27,60 @@ router.get('/', async(req, res) => {
     return res.status(200).send(cats);
 });
 
-router.get('/new', middleware.isLoggedIn, (req, res) => {
-    res.render('cats/new')
+
+/********************************************************************* */
+
+router.get('/new', (req, res) => {
+    res.render('cats/newCat')
 });
 
-router.post('/', middleware.isLoggedIn, async(req, res) => {
+/*
+ * Respond to GET requests to /sign-s3.
+ * Upon request, return JSON containing the temporarily-signed S3 request and
+ * the anticipated URL of the image.
+ */
+router.get('/sign-s3', (req, res) => {
+    const s3 = new aws.S3({
+        accessKeyId: AWS_ACCESS_KEY_ID,
+        secretAccessKey: AWS_SECRET_ACCESS_KEY
+    });;
+    const fileName = req.query['file-name'];
+    const fileType = req.query['file-type'];
 
+    var t = Date.now();
+    var hash = crypto.createHash('md5').update(t + fileName).digest('hex');
+    hash = 'images/' + hash + '.png';
+
+    const s3Params = {
+        Bucket: S3_BUCKET,
+        Key: hash,
+        Expires: 60,
+        ContentType: fileType,
+        ACL: 'public-read'
+    };
+
+    s3.getSignedUrl('putObject', s3Params, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.end();
+        }
+        const returnData = {
+            signedRequest: data,
+            url: `https://${S3_BUCKET}.s3.amazonaws.com/${hash}`
+        };
+        res.write(JSON.stringify(returnData));
+        res.end();
+    });
+});
+
+/*
+ * Respond to POST requests to /submit_form.
+ * This function needs to be completed to handle the information in
+ * a way that suits your application.
+ */
+router.post('/', async(req, res) => {
+
+    console.log(req.body);
     await Cat.create(req.body, function(err, cat) {
         if (err) console.log(err);
         else {
@@ -36,55 +89,14 @@ router.post('/', middleware.isLoggedIn, async(req, res) => {
             req.user.cats.push(cat);
             req.user.save();
             var id = cat._id;
-            //console.log("Cat create Succedded " + cat);
-            res.redirect('cats/' + id + '/pic');
-        }
-
-    });
-
-});
-
-router.get('/:id/pic', middleware.checkCatOwnership, async(req, res) => {
-
-    Cat.findById(req.params.id, function(err, cat) {
-        if (err) console.log(err);
-
-        else {
-            res.render('cats/profilepic', { cat: cat });
+            console.log("Cat create Succedded " + cat);
+            res.redirect('cats/' + id);
         }
     });
 
 });
 
-router.post('/:id/pic', middleware.checkCatOwnership, upload.single('photo'), async(req, res) => {
-
-    if (req.file) {
-
-        await Cat.findById(req.params.id, function(err, cat) {
-            if (err) console.log(err);
-
-            else {
-                var filename = req.file.filename;
-                fs.rename(dest + filename, dest + filename + '.png', function(err) {
-                    if (err) console.log('ERROR: ' + err);
-                });
-
-                cat.profilepic = filename + '.png';
-                cat.save();
-
-                res.redirect('/cats/' + req.params.id);
-
-                console.log("cat create succeed: " + cat);
-
-            }
-        });
-
-    } else throw 'error';
-});
-
-
-
-
+/************************************************************* */
 
 router.get('/:id', (req, res) => {
 
@@ -111,6 +123,7 @@ router.put('/:id', async(req, res) => {
     });
 });
 
+
 router.delete('/:id', async(req, res, next) => {
 
     await Cat.findById(req.params.id).populate("postings").exec(function(err, cat) {
@@ -118,25 +131,35 @@ router.delete('/:id', async(req, res, next) => {
         if (err) console.log(err);
 
         else {
-            fs.unlink(dest + cat.profilepic, function(err) {
-                if (err) console.log(err); //throw err;
-                // if no error, file has been deleted successfully
-                console.log('Profifle pic deleted!');
-            });
+            const s3 = new aws.S3({
+                accessKeyId: AWS_ACCESS_KEY_ID,
+                secretAccessKey: AWS_SECRET_ACCESS_KEY
+            });;
 
+            //delete cat profile pic
+            s3.deleteObject({
+                Bucket: S3_BUCKET,
+                Key: middleware.returnKey(cat.profilepic) //to be changed
+            }, function(err, data) {
+                if (err) console.log(err);
+            })
+
+            //remove all the posting pics
             for (var a = 0; a < cat.postings.length; a++) {
                 var imgs = cat.postings[a].images;
-                for (var b = 0; b < imgs.length; b++) {
-                    fs.unlink(dest + imgs[b], function(err) {
-                        if (err) console.log(err); //throw err;
-                        // if no error, file has been deleted successfully
-                        console.log('File deleted!');
-                    });
-                }
+                imgs.forEach(img => {
+                    s3.deleteObject({
+                        Bucket: S3_BUCKET,
+                        Key: middleware.returnKey(img)
+                    }, function(err, data) {
+                        if (err) console.log(err);
+                    })
+                });
             }
 
             cat.remove();
-            res.send("Cat removed!!");
+            console.log("Cat removed!!");
+            res.redirect('back');
         }
 
     });
@@ -150,6 +173,14 @@ router.delete('/', async(req, res) => {
             console.log(err);
         } else {
 
+            Post.remove({}, function(err) {
+                if (err) console.log(err);
+
+                else {
+                    console.log("Post removed!");
+                }
+            })
+
             Gallery.remove({}, function(err) {
                 if (err) console.log(err);
 
@@ -162,62 +193,12 @@ router.delete('/', async(req, res) => {
         }
     });
 
-    await rimraf(dest, function() {
-        fs.mkdirSync(dest, { recursive: true })
-    });
-
     return res.status(202).send({
         error: false,
         cat
     })
 
 });
-
-
-
-
-
-router.get('/:id/imgs', middleware.checkCatOwnership, async(req, res) => {
-
-    await Cat.findById(req.params.id, function(err, cat) {
-
-        if (err) console.log(err);
-
-        else {
-            res.render("cats/newPosting", { cat: cat });
-        }
-    });
-
-});
-
-
-
-router.post('/:id/imgs', middleware.checkCatOwnership, upload.single('photo'), async(req, res) => {
-
-    if (req.file) {
-
-        await Cat.findById(req.params.id, function(err, cat) {
-            if (err) console.log(err);
-
-            else {
-                var filename = req.file.filename;
-                fs.rename(dest + filename, dest + filename + '.png', function(err) {
-                    if (err) console.log('ERROR: ' + err);
-                });
-
-                cat.tmp.push(filename + '.png');
-                cat.save();
-
-                //console.log("tmp: " + cat.tmp);
-                //console.log("cat: " + cat);
-                res.redirect('/cats/' + req.params.id + "/imgs");
-
-            }
-        });
-
-    } else throw 'error';
-});
-
 
 
 //upload local files to mongodb
@@ -256,7 +237,7 @@ router.get('/gallery/:m', function(req, res) {
                 });
             });
 
-            console.log(pics);
+            //console.log(pics);
             res.render("cats/gallery", { pics: pics });
         }
     });
@@ -352,4 +333,84 @@ module.exports = router;
 //         }
 //     });
 
+// });
+
+//router.get('/:id/pic', middleware.checkCatOwnership, async(req, res) => {
+
+//     Cat.findById(req.params.id, function(err, cat) {
+//         if (err) console.log(err);
+
+//         else {
+//             res.render('cats/profilepic', { cat: cat });
+//         }
+//     });
+
+// });
+
+// router.post('/:id/pic', middleware.checkCatOwnership, upload.single('photo'), async(req, res) => {
+
+//     if (req.file) {
+
+//         await Cat.findById(req.params.id, function(err, cat) {
+//             if (err) console.log(err);
+
+//             else {
+//                 var filename = req.file.filename;
+//                 fs.rename(dest + filename, dest + filename + '.png', function(err) {
+//                     if (err) console.log('ERROR: ' + err);
+//                 });
+
+//                 cat.profilepic = filename + '.png';
+//                 cat.save();
+
+//                 res.redirect('/cats/' + req.params.id);
+
+//                 console.log("cat create succeed: " + cat);
+
+//             }
+//         });
+
+//     } else throw 'error';
+// });
+
+
+// router.get('/:id/imgs', middleware.checkCatOwnership, async(req, res) => {
+
+//     await Cat.findById(req.params.id, function(err, cat) {
+
+//         if (err) console.log(err);
+
+//         else {
+//             res.render("cats/newPosting", { cat: cat });
+//         }
+//     });
+
+// });
+
+
+
+// router.post('/:id/imgs', middleware.checkCatOwnership, upload.single('photo'), async(req, res) => {
+
+//     if (req.file) {
+
+//         await Cat.findById(req.params.id, function(err, cat) {
+//             if (err) console.log(err);
+
+//             else {
+//                 var filename = req.file.filename;
+//                 fs.rename(dest + filename, dest + filename + '.png', function(err) {
+//                     if (err) console.log('ERROR: ' + err);
+//                 });
+
+//                 cat.tmp.push(filename + '.png');
+//                 cat.save();
+
+//                 //console.log("tmp: " + cat.tmp);
+//                 //console.log("cat: " + cat);
+//                 res.redirect('/cats/' + req.params.id + "/imgs");
+
+//             }
+//         });
+
+//     } else throw 'error';
 // });

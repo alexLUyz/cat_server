@@ -27,28 +27,7 @@ middlewareObj.checkCatOwnership = function(req, res, next) {
     }
 }
 
-// middlewareObj.checkCommentOwnership = function(req, res, next) {
-//     if (req.isAuthenticated()) {
-//         Comment.findById(req.params.commentID, function(err, foundComment) {
-//             if (err) {
-//                 req.flash("error", "Something went wrong!");
-//                 res.redirect("back");
-//             } else {
-//                 //does the author own the comment?
-//                 if (foundComment.author.id.equals(req.user._id)) {
-//                     next();
-//                 } else {
-//                     req.flash("error", "Sorry. You do NOT have the permission!");
-//                     res.redirect("back");
-//                 }
 
-//             }
-//         });
-//     } else {
-//         req.flash("error", "You need to log in first!");
-//         res.redirect("back");
-//     }
-// }
 
 middlewareObj.isLoggedIn = function(req, res, next) {
     if (req.isAuthenticated()) {
@@ -57,6 +36,12 @@ middlewareObj.isLoggedIn = function(req, res, next) {
 
     console.log("error", "You need to log in first!");
     res.redirect("/login");
+}
+
+middlewareObj.returnKey = function(url) {
+    var index = url.indexOf('image');
+    var str = url.substring(index);
+    return str;
 }
 
 

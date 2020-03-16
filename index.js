@@ -78,7 +78,7 @@ app.use("/cats", catRoutes);
 app.use("/cats/:id/posts", postingRoutes);
 
 //Tell Express to listen to requests. Start server.
-// app.listen(3000, function() {
+// app.listen(3000 || process.env.PORT, function() {
 //     console.log("Local CPEN391 has started!!")
 // });
 

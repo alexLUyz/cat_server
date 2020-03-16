@@ -10,23 +10,28 @@
                 <h2>content:
                     <%= post.content%>
                 </h2>
-                <h4>likes:
-                    <%= post.likes%>
-                        <form action="/cats/<%= cat.id %>/posts/<%= post._id %>/likes?_method=PUT" method="POST">
-                            <div class="form-group">
-                                <button class="btn btn-lg btn-primary btn-block">Like</button>
-                            </div>
-                        </form>
-                </h4>
+                likes:
+                <%= post.likes%>
+                    <form action="/cats/<%= cat.id %>/posts/<%= post._id %>/likes?_method=PUT" method="POST">
+                        <button class="btn btn-primary btn-block">Like</button>
+                    </form>
 
-                <a href="/cats/<%= cat.id%>">More about <%=cat.name%></a>
+                    <% if (currentUser && currentUser._id.equals(cat.owner.id)) {%>
+
+                        <form class="delete-form" action="/cats/<%=cat._id%>/posts/<%= post._id %>?_method=DELETE" method="POST">
+                            <button class="btn btn-danger">Delete</button>
+                        </form>
+                        <%}%>
+
+
+                            <a href="/cats/<%= cat.id%>">See more posts of <%=cat.name%></a>
 
             </div>
 
             <% for (var i = 0; i < post.images.length; i++) { %>
                 <div class="col-md-3 col-sm-6">
                     <div class="thumbnail">
-                        <img src="/images/<%=post.images[i]%>">
+                        <img src="<%=post.images[i]%>">
                     </div>
                 </div>
 

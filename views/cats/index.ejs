@@ -7,6 +7,7 @@
                 <h3>
                     <%= cat.name%>
                 </h3>
+                <img src="<%=cat.profilepic%>" height="80" width="100">
                 <p>Gender:
                     <%= cat.gender%>
                 </p>
@@ -28,12 +29,12 @@
 
 
                         <a href="<%=cat.id%>/posts/<%=cat.postings[i].id%>">
-                            <img src="/images/<%=cat.postings[i].images[0]%>">
+                            <img src="<%=cat.postings[i].images[0]%>">
                         </a>
 
                         <p>
                             <%= cat.postings[i].content%> <a href="<%=cat.id%>/posts/<%=cat.postings[i].id%>">
-                                See More
+                                More about the post
                             </a>
                         </p>
 
@@ -58,7 +59,7 @@
 
                     <div class="col-md-3 col-sm-6">
                         <div class="thumbnail">
-                            <a href="/cats/<%= cat.id%>/imgs">
+                            <a href="/cats/<%= cat.id%>/posts/newPost">
                                 <h1>Add a New Post</h1>
                             </a>
 
