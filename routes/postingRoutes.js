@@ -27,26 +27,6 @@ router.get("/newPost", middleware.checkCatOwnership, async(req, res) => {
         if (err) {
             console.log(err);
         } else {
-            if (cat.tmp.length != 0) {
-
-                const s3 = new aws.S3({
-                    accessKeyId: AWS_ACCESS_KEY_ID,
-                    secretAccessKey: AWS_SECRET_ACCESS_KEY
-                });
-
-                cat.tmp.forEach(img => {
-                    s3.deleteObject({
-                        Bucket: S3_BUCKET,
-                        Key: middleware.returnKey(img) //to be changed
-                    }, function(err, data) {
-                        if (err) console.log(err);
-                    })
-                });
-
-                cat.tmp = [];
-                cat.save();
-                console.log('tmp imgs: ' + cat.tmp)
-            }
             res.render("posts/newPost", { cat: cat });
         }
     });
@@ -73,10 +53,10 @@ router.post("/", middleware.checkCatOwnership, async(req, res) => {
         if (err) console.log(err);
 
         else {
-            if (cat.tmp.length == 0) {
-                console.log('no imgs to post!!');
-                res.redirect('back');
-            }
+            // if (cat.tmp.length == 0) {
+            //     console.log('no imgs to post!!');
+            //     res.redirect('back');
+            // }
 
             //console.log("cat tmp: " + cat.tmp);
             var imgs = cat.tmp;
