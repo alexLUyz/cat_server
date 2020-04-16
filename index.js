@@ -15,21 +15,7 @@ var catRoutes = require("./routes/catRoutes"),
     userRoutes = require("./routes/userRoutes"),
     indexRoutes = require("./routes/indexRoutes")
 
-//if (process.env.NODE_ENV === 'goorm') {
 
-//mongoose local connect
-// console.log('MongoDB local connect')
-// mongoose.set('useNewUrlParser', true);
-// mongoose.set('useFindAndModify', false);
-// mongoose.set('useCreateIndex', true);
-// mongoose.set('useUnifiedTopology', true);
-// mongoose.connect("mongodb://localhost/391").then(() => {
-//     console.log("database connected!")
-// });
-
-// }
-
-// else {
 mongoose.connect('mongodb+srv://alexDB:' + PW + '@cluster0-k44mz.mongodb.net/' + DB + '?retryWrites=true&w=majority', {
     useNewUrlParser: true,
     useCreateIndex: true,
@@ -81,11 +67,11 @@ app.use("/cats", catRoutes);
 app.use("/cats/:id/posts", postingRoutes);
 
 //Tell Express to listen to requests. Start server.
-// app.listen(3000 || process.env.PORT, function() {
-//     console.log("Local CPEN391 has started!!")
-// });
-
-
-app.listen(process.env.PORT, process.env.IP, function() {
-    console.log("Cloud CPEN391 has started!!")
+app.listen(3000 || process.env.PORT, function() {
+    console.log("Local CPEN391 has started!!")
 });
+
+
+// app.listen(process.env.PORT, process.env.IP, function() {
+//     console.log("Cloud CPEN391 has started!!")
+// });

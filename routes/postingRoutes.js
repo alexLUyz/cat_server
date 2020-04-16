@@ -10,6 +10,8 @@ var Cat = require("../models/cat"),
 var middleware = require("../middleware");
 
 /*********************************************************/
+
+// new post form
 router.get("/new", middleware.checkCatOwnership, async(req, res) => {
     await Cat.findById(req.params.id, function(err, cat) {
         if (err) {
@@ -20,6 +22,7 @@ router.get("/new", middleware.checkCatOwnership, async(req, res) => {
     });
 });
 
+// new images in a post POST route 
 router.post("/pics", middleware.checkCatOwnership, async(req, res) => {
     await Cat.findById(req.params.id, function(err, cat) {
 
@@ -36,6 +39,7 @@ router.post("/pics", middleware.checkCatOwnership, async(req, res) => {
     });
 });
 
+// image delete route
 router.delete("/pics", middleware.checkCatOwnership, async(req, res) => {
     await Cat.findById(req.params.id, function(err, cat) {
 
@@ -67,6 +71,7 @@ router.delete("/pics", middleware.checkCatOwnership, async(req, res) => {
     });
 });
 
+// new post POST route 
 router.post("/", middleware.checkCatOwnership, async(req, res) => {
     await Cat.findById(req.params.id, function(err, cat) {
         if (err) console.log(err);
@@ -129,6 +134,7 @@ router.post("/", middleware.checkCatOwnership, async(req, res) => {
 
 /*********************************************************/
 
+// post get route
 router.get("/:pid", async(req, res) => {
 
     await Cat.findById(req.params.id, function(err, cat) {
@@ -149,6 +155,7 @@ router.get("/:pid", async(req, res) => {
 
 });
 
+//post delete route
 router.delete("/:pid", async(req, res) => {
 
     await Post.findById(req.params.pid, function(err, post) {
@@ -179,6 +186,7 @@ router.delete("/:pid", async(req, res) => {
     s
 });
 
+// post edit PUT route
 router.put("/:pid/likes", async(req, res) => {
 
     await Post.findById(req.params.pid, function(err, post) {

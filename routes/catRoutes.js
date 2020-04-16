@@ -1,5 +1,5 @@
-const AWS_ACCESS_KEY_ID = 'AKIAJS4R2IFRZKHIIK7A';
-const AWS_SECRET_ACCESS_KEY = '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';
+const AWS_ACCESS_KEY_ID = 'ID';
+const AWS_SECRET_ACCESS_KEY = 'KEY';
 const S3_BUCKET = '391imgs';
 const DB = 'cloud_391Module2';
 const aws = require('aws-sdk');
@@ -10,16 +10,7 @@ var Cat = require("../models/cat"),
     Post = require("../models/post"),
     Gallery = require("../models/gallery")
 var middleware = require("../middleware");
-//Img = require("../models/image")
-//var fs = require("fs");
-//var rimraf = require("rimraf");
-//var mkdirp = require('mkdirp');
-//const multer = require('multer');
-//const dest = __dirname.slice(0, __dirname.length - 7) + '/public/images/';
-//const upload = multer({ dest: dest });
 
-//console.log('hehe:' + __dirname.length);
-//console.log(__dirname.slice(0, __dirname.length-7) + '/images');
 
 
 router.get('/', async(req, res) => {
@@ -32,6 +23,7 @@ router.get('/', async(req, res) => {
 
 /********************************************************************* */
 
+// new cat form 
 router.get('/new', (req, res) => {
     res.render('cats/newCat')
 });
@@ -101,6 +93,7 @@ router.post('/', async(req, res) => {
 
 /************************************************************* */
 
+// cat index route
 router.get('/:id', (req, res) => {
 
     Cat.findById(req.params.id).populate("postings").exec(function(err, cat) {
@@ -113,7 +106,7 @@ router.get('/:id', (req, res) => {
 
 });
 
-
+//cat edit route
 router.put('/:id', async(req, res) => {
 
     const { id } = req.params;
@@ -126,7 +119,7 @@ router.put('/:id', async(req, res) => {
     });
 });
 
-
+//cat delete route
 router.delete('/:id', async(req, res, next) => {
 
     await Cat.findById(req.params.id).populate("postings").exec(function(err, cat) {
@@ -169,7 +162,7 @@ router.delete('/:id', async(req, res, next) => {
 
 });
 
-
+// delete all cat 
 router.delete('/', async(req, res) => {
     let cat = await Cat.remove({}, function(err) {
         if (err) {
@@ -203,6 +196,7 @@ router.delete('/', async(req, res) => {
 
 });
 
+//cat follow route
 router.post('/:id/follows', async(req, res) => {
 
     await Cat.findById(req.params.id, function(err, cat) {
@@ -218,7 +212,7 @@ router.post('/:id/follows', async(req, res) => {
 });
 
 
-
+//cat gallery route
 router.get('/gallery/:m', function(req, res) {
 
     Gallery.find({}, function(err, galleries) {
@@ -248,187 +242,3 @@ router.get('/gallery/:m', function(req, res) {
 
 
 module.exports = router;
-
-//upload local files to mongodb
-// router.post('/img', async(req, res) => {
-//     var i = {
-//         data: fs.readFileSync('./cat.png'),
-//         contentType: "image/png"
-
-//     }
-
-//     let img = Img.create(i);
-//     return res.status(201).send({
-//         error: false,
-//         img
-//     });
-
-// });
-
-// router.delete('/:id/upload/:img', middleware.checkCatOwnership, async(req, res) => {
-
-//     //console.log('dest: ' + dest)
-//     let cat = await Cat.findById(req.params.id);
-//     let img = await cat.image;
-//     let imgName = req.params.img;
-
-//     for (var i = 0; i < img.length; i++) {
-//         if (img[i] === imgName) { img.splice(i, 1); }
-//     }
-
-//     await cat.save();
-
-//     fs.unlink(dest + imgName, function(err) {
-//         if (err) throw err;
-//         // if no error, file has been deleted successfully
-//         console.log('File deleted!');
-//     });
-
-//     console.log(cat);
-//     console.log(img);
-
-// });
-
-// router.post('/:id/upload', upload.single('photo'), async(req, res) => {
-
-//     if (req.file) {
-
-//         await Cat.findById(req.params.id, function(err, cat) {
-//             if (err) console.log(err);
-
-//             else {
-//                 var filename = req.file.filename;
-//                 fs.rename(dest + filename, dest + filename + '.png', function(err) {
-//                     if (err) console.log('ERROR: ' + err);
-//                 });
-
-//                 var time = new Date().toString();
-//                 var post = {
-//                     image: filename + '.png',
-//                     description: req.body.description,
-//                     time: time
-//                 }
-
-//                 //console.log(Date.now().toString());
-//                 cat.posts.push(post);
-//                 cat.image.push(filename + '.png');
-
-//                 console.log("des:" + req.body.description);
-//                 //cat.save();
-
-
-
-//                 Gallery.create({
-//                     image: filename + '.png',
-//                     cat: cat
-//                 }, function(err, pic) {
-//                     if (err) console.log("ERRRR: " + err);
-
-//                     else {
-//                         cat.gallery.push(pic);
-//                         cat.save();
-//                     }
-
-//                 });
-
-//                 res.redirect('/cats/' + req.params.id);
-
-//             }
-//         });
-
-
-//     } else throw 'error';
-// });
-
-// router.get('/:id/upload', middleware.checkCatOwnership, async(req, res) => {
-
-//     await Cat.findById(req.params.id, function(err, cat) {
-
-//         if (err) console.log(err);
-
-//         else {
-//             res.render("cats/imgUpload", { cat: cat });
-//         }
-//     });
-
-// });
-
-//router.get('/:id/pic', middleware.checkCatOwnership, async(req, res) => {
-
-//     Cat.findById(req.params.id, function(err, cat) {
-//         if (err) console.log(err);
-
-//         else {
-//             res.render('cats/profilepic', { cat: cat });
-//         }
-//     });
-
-// });
-
-// router.post('/:id/pic', middleware.checkCatOwnership, upload.single('photo'), async(req, res) => {
-
-//     if (req.file) {
-
-//         await Cat.findById(req.params.id, function(err, cat) {
-//             if (err) console.log(err);
-
-//             else {
-//                 var filename = req.file.filename;
-//                 fs.rename(dest + filename, dest + filename + '.png', function(err) {
-//                     if (err) console.log('ERROR: ' + err);
-//                 });
-
-//                 cat.profilepic = filename + '.png';
-//                 cat.save();
-
-//                 res.redirect('/cats/' + req.params.id);
-
-//                 console.log("cat create succeed: " + cat);
-
-//             }
-//         });
-
-//     } else throw 'error';
-// });
-
-
-// router.get('/:id/imgs', middleware.checkCatOwnership, async(req, res) => {
-
-//     await Cat.findById(req.params.id, function(err, cat) {
-
-//         if (err) console.log(err);
-
-//         else {
-//             res.render("cats/newPosting", { cat: cat });
-//         }
-//     });
-
-// });
-
-
-
-// router.post('/:id/imgs', middleware.checkCatOwnership, upload.single('photo'), async(req, res) => {
-
-//     if (req.file) {
-
-//         await Cat.findById(req.params.id, function(err, cat) {
-//             if (err) console.log(err);
-
-//             else {
-//                 var filename = req.file.filename;
-//                 fs.rename(dest + filename, dest + filename + '.png', function(err) {
-//                     if (err) console.log('ERROR: ' + err);
-//                 });
-
-//                 cat.tmp.push(filename + '.png');
-//                 cat.save();
-
-//                 //console.log("tmp: " + cat.tmp);
-//                 //console.log("cat: " + cat);
-//                 res.redirect('/cats/' + req.params.id + "/imgs");
-
-//             }
-//         });
-
-//     } else throw 'error';
-// });

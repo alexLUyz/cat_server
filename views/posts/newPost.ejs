@@ -23,10 +23,10 @@
                     <hr>
                     <input type="file" id="file-input">
                     <p id="status">Please upload your cat's images</p>
-                    <img style="border:1px solid gray;" id="preview" src="https://391imgs.s3-us-west-2.amazonaws.com/images/default.png" height="100" width="100">
+                    <img style="border:1px solid gray;" id="preview" src="/images/simple-kitten-drawing-52.jpg" height="100" width="100">
 
                     <form method="POST" action="/cats/<%=cat._id%>/posts/pics">
-                        <input type="hidden" id="avatar-url" name="img" value="https://391imgs.s3-us-west-2.amazonaws.com/images/default.png">
+                        <input type="hidden" id="avatar-url" name="img" value="/images/simple-kitten-drawing-52.jpg">
 
                         <div class="form-group">
                             <button class="btn btn-sm btn-primary btn-block">Upload this img</button>
