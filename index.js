@@ -1,5 +1,5 @@
-const DB = 'cloud_391Module2';
-const PW = 'lyz19950912';
+const DB = 'SOME DB';
+const PW = 'PASSWORD';
 
 var express = require("express"),
     app = express(),
